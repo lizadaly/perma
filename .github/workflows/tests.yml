@@ -77,7 +77,6 @@ jobs:
         uses: codecov/codecov-action@v2
         with:
           verbose: true
-          files: .coverage/coverage.xml
           fail_ci_if_error: true
 
       - name: Set up for Playwright tests
