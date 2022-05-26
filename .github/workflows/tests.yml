@@ -71,7 +71,7 @@ jobs:
 
       - name: Set up for Codecov upload
         run: |
-          chmod -R a+rx /home/runner/work/perma/perma/services/docker/minio/ssl/CAs  # codecov/v2 will scan the whole tree and error if it can't reach subdirs
+          sudo chmod -R a+rx /home/runner/work/perma/perma/services/docker/minio/ssl/CAs  # codecov/v2 will scan the whole tree and error if it can't reach subdirs
 
       - name: Codecov
         uses: codecov/codecov-action@v2
