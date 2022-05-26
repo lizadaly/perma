@@ -6,7 +6,7 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     # don't run on pushes to forks
-    if: github.event_name == 'pull_request' || github.repository == 'harvard-lil/perma'
+    if: github.event_name == 'pull_request' # || github.repository == 'harvard-lil/perma'
 
     steps:
       - uses: actions/checkout@v2
@@ -66,6 +66,15 @@ jobs:
             --cov --cov-config=setup.cfg --cov-report xml  `# write coverage data to .coverage for upload by codecov` \
             -vv
 
+      ### codecov ###
+      # https://github.com/codecov/codecov-action
+      - name: Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          verbose: true
+          files: .coverage/coverage.xml
+          fail_ci_if_error: true
+
       - name: Set up for Playwright tests
         shell: 'script -q -e -c "bash --noprofile --norc -eo pipefail {0}"'  # avoid docker-compose "the input device is not a TTY" -- see https://github.com/actions/runner/issues/241#issuecomment-842566950
         timeout-minutes: 1
@@ -81,10 +90,11 @@ jobs:
           docker-compose exec playwright pytest --browser chromium --browser firefox --browser webkit
           docker-compose exec web pkill -f python  # stop web server
 
-      ### codecov ###
-      # https://github.com/codecov/codecov-action
-      - name: Codecov
-        uses: codecov/codecov-action@v1
+      - name: Set up for Codecov upload
+        run: |
+          chmod -R a+rx /home/runner/work/perma/perma/services/docker/minio/ssl/CAs  # codecov/v2 will scan the whole tree and error if it can't reach subdirs
+
+
 
       # Commit built assets if necessary
       - name: Commit built assets
