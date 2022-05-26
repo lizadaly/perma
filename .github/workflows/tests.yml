@@ -68,6 +68,11 @@ jobs:
 
       ### codecov ###
       # https://github.com/codecov/codecov-action
+
+      - name: Set up for Codecov upload
+        run: |
+          chmod -R a+rx /home/runner/work/perma/perma/services/docker/minio/ssl/CAs  # codecov/v2 will scan the whole tree and error if it can't reach subdirs
+
       - name: Codecov
         uses: codecov/codecov-action@v2
         with:
@@ -89,12 +94,6 @@ jobs:
         run: |
           docker-compose exec playwright pytest --browser chromium --browser firefox --browser webkit
           docker-compose exec web pkill -f python  # stop web server
-
-      - name: Set up for Codecov upload
-        run: |
-          chmod -R a+rx /home/runner/work/perma/perma/services/docker/minio/ssl/CAs  # codecov/v2 will scan the whole tree and error if it can't reach subdirs
-
-
 
       # Commit built assets if necessary
       - name: Commit built assets
